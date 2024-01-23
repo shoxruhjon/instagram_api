@@ -1,5 +1,7 @@
 package dev.shoxruhjon.instagram_api.service.comment;
 
+import dev.shoxruhjon.instagram_api.dto.request.CommentCreateDto;
+import dev.shoxruhjon.instagram_api.dto.response.CommentResponse;
 import dev.shoxruhjon.instagram_api.entity.CommentEntity;
 import dev.shoxruhjon.instagram_api.entity.PostEntity;
 import dev.shoxruhjon.instagram_api.entity.UserEntity;
@@ -8,6 +10,7 @@ import dev.shoxruhjon.instagram_api.repository.PostRepository;
 import dev.shoxruhjon.instagram_api.service.post.PostService;
 import dev.shoxruhjon.instagram_api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,17 +22,19 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
+
     @Override
-    public CommentEntity createComment(CommentEntity comment, Integer postId, Integer userId) {
+    public CommentResponse createComment(CommentCreateDto dto, Integer postId, Integer userId) {
         UserEntity user = userService.findUserById(userId);
         PostEntity post = postService.findPostById(postId);
+        CommentEntity comment = modelMapper.map(dto, CommentEntity.class);
         comment.setUser(user);
-        comment.setContent(comment.getContent());
         comment.setCreatedAt(LocalDateTime.now());
         CommentEntity savedComment = commentRepository.save(comment);
         post.getComments().add(savedComment);
         postRepository.save(post);
-        return savedComment;
+        return modelMapper.map(savedComment, CommentResponse.class);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dev.shoxruhjon.instagram_api.controller;
 
+import dev.shoxruhjon.instagram_api.dto.request.CommentCreateDto;
+import dev.shoxruhjon.instagram_api.dto.response.CommentResponse;
 import dev.shoxruhjon.instagram_api.entity.CommentEntity;
 import dev.shoxruhjon.instagram_api.service.comment.CommentService;
 import dev.shoxruhjon.instagram_api.service.user.UserService;
@@ -18,9 +20,9 @@ public class CommentController {
     private final UserService userService;
 
     @PostMapping("/post/{postId}")
-    public ResponseEntity<CommentEntity> createComment(@RequestBody CommentEntity comment,
-                                                       @RequestHeader("Authorization") String jwt,
-                                                       @PathVariable("postId") Integer postId){
+    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCreateDto comment,
+                                                         @RequestHeader("Authorization") String jwt,
+                                                         @PathVariable("postId") Integer postId){
         return new ResponseEntity<>(commentService.createComment(
                 comment, postId, userService.findUserByJwt(jwt).getId()), HttpStatus.CREATED);
     }
